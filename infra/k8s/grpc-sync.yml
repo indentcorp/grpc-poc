@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grpc-sync
+  labels:
+    tags.datadoghq.com/service: "grpc-sync"
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: grpc-sync
+  template:
+    metadata:
+      labels:
+        app: grpc-sync
+    spec:
+      containers:
+        - name: grpc-sync
+          image: IMAGE-PLACEHOLDER
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "200m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grpc-sync
+spec:
+  selector:
+    app: grpc-sync
+  ports:
+    - name: http
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: grpc-sync
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: "playground.vreview.io"
+      http:
+        paths:
+          - pathType: Prefix
+            path: "/grpc-sync"
+            backend:
+              service:
+                name: grpc-sync
+                port:
+                  number: 3000

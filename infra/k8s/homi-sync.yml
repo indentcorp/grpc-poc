@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: homi-sync
+  labels:
+    tags.datadoghq.com/service: "homi-sync"
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: homi-sync
+  template:
+    metadata:
+      labels:
+        app: homi-sync
+    spec:
+      containers:
+        - name: homi-sync
+          image: IMAGE-PLACEHOLDER
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "200m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: homi-sync
+spec:
+  selector:
+    app: homi-sync
+  ports:
+    - name: http
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: homi-sync
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: "playground.vreview.io"
+      http:
+        paths:
+          - pathType: Prefix
+            path: "/homi-sync"
+            backend:
+              service:
+                name: homi-sync
+                port:
+                  number: 3000

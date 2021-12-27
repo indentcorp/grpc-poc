@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fastapi-sync
+  labels:
+    tags.datadoghq.com/service: "fastapi-sync"
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: fastapi-sync
+  template:
+    metadata:
+      labels:
+        app: fastapi-sync
+    spec:
+      containers:
+        - name: fastapi-sync
+          image: IMAGE-PLACEHOLDER
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "200m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fastapi-sync
+spec:
+  selector:
+    app: fastapi-sync
+  ports:
+    - name: http
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: fastapi-sync
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: "playground.vreview.io"
+      http:
+        paths:
+          - pathType: Prefix
+            path: "/fastapi-sync"
+            backend:
+              service:
+                name: fastapi-sync
+                port:
+                  number: 3000

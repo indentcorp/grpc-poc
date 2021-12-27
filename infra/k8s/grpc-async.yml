@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grpc-async
+  labels:
+    tags.datadoghq.com/service: "grpc-async"
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: grpc-async
+  template:
+    metadata:
+      labels:
+        app: grpc-async
+    spec:
+      containers:
+        - name: grpc-async
+          image: IMAGE-PLACEHOLDER
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "200m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grpc-async
+spec:
+  selector:
+    app: grpc-async
+  ports:
+    - name: http
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: grpc-async
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: "playground.vreview.io"
+      http:
+        paths:
+          - pathType: Prefix
+            path: "/grpc-async"
+            backend:
+              service:
+                name: grpc-async
+                port:
+                  number: 3000
