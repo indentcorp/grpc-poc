@@ -1,0 +1,9 @@
+# Framework
+fastapi==0.70.1
+
+# ASGI Server
+uvicorn[standard]==0.16.0
+
+# Dependencies
+pydantic==1.8.2
+motor==2.5.1
