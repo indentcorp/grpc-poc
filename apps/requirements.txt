@@ -1,3 +1,7 @@
+# grpc
+grpcio==1.43.0
+grpcio-tools==1.43.0
+
 # Framework
 fastapi==0.70.1
 
@@ -5,5 +9,7 @@ fastapi==0.70.1
 uvicorn[standard]==0.16.0
 
 # Dependencies
+arrow==1.2.1
 pydantic==1.8.2
+pymongo>=3.12 # Due to motor
 motor==2.5.1
