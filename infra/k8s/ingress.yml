@@ -1,0 +1,56 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+  name: grpc-poc
+  labels:
+    name: grpc-poc
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: "playground.vreview.io"
+    http:
+      paths:
+        - pathType: Prefix
+          path: "/fastapi-async"
+          backend:
+            service:
+              name: fastapi-async
+              port:
+                number: 3000
+        - pathType: Prefix
+          path: "/fastapi-sync(/|$)(.*)"
+          backend:
+            service:
+              name: fastapi-sync
+              port:
+                number: 3000
+        - pathType: Prefix
+          path: "/grpc-async"
+          backend:
+            service:
+              name: grpc-async
+              port:
+                number: 3000
+        - pathType: Prefix
+          path: "/grpc-sync(/|$)(.*)"
+          backend:
+            service:
+              name: grpc-sync
+              port:
+                number: 3000
+        - pathType: Prefix
+          path: "/homi-sync"
+          backend:
+            service:
+              name: homi-sync
+              port:
+                number: 3000
+        - pathType: Prefix
+          path: "/homi-async"
+          backend:
+            service:
+              name: homi-async
+              port:
+                number: 3000
